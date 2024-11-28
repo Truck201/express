@@ -8,14 +8,14 @@ const articulos = JSON.parse(
 export const routerPanaderia = express.Router();
 
 routerPanaderia.get("/", (req, res) => {
-  res.json(articulos.datos.pan);
+  res.json(articulos.datos.panaderia);
 });
 
 // api/articulos/panaderia/:nombre
 routerPanaderia.get("/:nombre", (req, res) => {
   // Añadir verificación de parámetro id
   const nombre = req.params.nombre;
-  const articulos = articulos.pan.filter((art) => art.nombre === nombre);
+  const articulos = articulos.panaderia.filter((art) => art.nombre === nombre);
 
   if (articulos.length === 0) {
     res.status(400).send(`No se encuentra articulos llamados ${articulos}`);

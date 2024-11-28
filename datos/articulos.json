@@ -1,63 +1,63 @@
 {
   "datos": {
-    "pan": [
+    "panaderia": [
       {
         "id": 1,
         "nombre": "Bizcochos",
         "precio": 1800,
-        "url": ""
+        "url": "./assets/bizcochos.png"
       },
       {
         "id": 2,
         "nombre": "Pan tostado",
         "precio": 1800,
-        "url": ""
+        "url": "./assets/pan-tostado.png"
       },
       {
         "id": 3,
         "nombre": "Facturas",
         "precio": 1800,
-        "url": ""
+        "url": "./assets/facturas.png"
       }
     ],
-    "emb": [
+    "embutidos": [
       {
         "id": 1,
         "nombre": "Salamin",
         "precio": 1800,
-        "url": ""
+        "url": "./assets/salamin.png"
       },
       {
         "id": 2,
         "nombre": "Queso barra",
         "precio": 1800,
-        "url": ""
+        "url": "./assets/queso-barra.png"
       },
       {
         "id": 3,
         "nombre": "Mortadela",
         "precio": 1800,
-        "url": ""
+        "url": "./assets/mortadela.png"
       }
     ],
-    "lac": [
+    "lacteos": [
       {
         "id": 1,
         "nombre": "Leche 1L",
         "precio": 1800,
-        "url": ""
+        "url": "./assets/leche-tetra.png"
       },
       {
         "id": 2,
         "nombre": "Crema 300g",
         "precio": 1800,
-        "url": ""
+        "url": "./assets/crema.png"
       },
       {
         "id": 3,
         "nombre": "Queso rallado",
         "precio": 1800,
-        "url": ""
+        "url": "./assets/queso-rallado.png"
       }
     ]
   }

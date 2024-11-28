@@ -7,21 +7,37 @@ import cors from "cors";
 const articulos = JSON.parse(
   fs.readFileSync("./datos/articulos.json", "utf-8")
 );
+
 import { isCorrect, isPartialCorrect } from "./validacion.js";
 
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      const ACCEPTED_ORIGINS = ["http://localhost:8080", "http://punto70"];
+
+      if (!origin || ACCEPTED_ORIGINS.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.error(`Bloqueado por CORS: origen ${origin}`);
+      return callback(new Error("No permitido por CORS"));
+    },
+  })
+);
+
 app.disable("x-powered-by");
+// Middleware para procesar JSON
 app.use(express.json());
 
 // Routers
 import { routerPanaderia } from "./routes/panaderia.js";
-app.use("/api/articulos/panaderia", routerPanaderia);
+app.use("/api/articulos/pan", routerPanaderia);
 
 import { routerLacteos } from "./routes/lacteos.js";
-app.use("/api/articulos/lacteos", routerLacteos);
+app.use("/api/articulos/lac", routerLacteos);
 
 import { routerEmbutidos } from "./routes/embutidos.js";
-import { constants } from "node:buffer";
-app.use("/api/articulos/embutidos", routerEmbutidos);
+app.use("/api/articulos/emb", routerEmbutidos);
 
 // GET
 app.get("/api/articulos", (req, res) => {
@@ -42,6 +58,7 @@ const tomarSiguienteID = (array) => {
 };
 
 app.post("/api/articulos/:categoria", (req, res) => {
+  console.log(req.body);
   const categoria = req.params.categoria;
   const validacion = isCorrect(req.body);
 
@@ -132,6 +149,10 @@ app.delete("/api/articulos/:categoria/:id", (req, res) => {
   return res
     .status(200)
     .json({ message: `El articulo con id ${id} ha sido eliminado 👌` });
+});
+
+app.use((req, res) => {
+  return res.status(404).json({ error: "Ruta no encontrada" });
 });
 
 const PORT = process.env.PORT || 3000;

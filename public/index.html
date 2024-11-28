@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API REST MERCADO</title>
+    <style>
+      .categoria {
+        position: relative;
+        margin-bottom: 2rem;
+      }
+
+      .articulos {
+        display: flex;
+        overflow-x: hidden;
+        scroll-behavior: smooth;
+      }
+
+      .articulo {
+        min-width: 250px;
+        margin: 0.4rem;
+        border: 1px solid #ccc;
+        padding: 1rem;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .articulo img {
+        width: 80%;
+        height: auto;
+      }
+
+      .btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem;
+      }
+
+      .btn-left {
+        left: 0;
+      }
+
+      .btn-right {
+        right: 0;
+      }
+
+      .categoria h2 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="categories"></main>
+    <script type="module">
+      const BASE_URL =
+        window.location.hostname === "localhost"
+          ? "http://localhost:3000/api/articulos"
+          : "https://punto70.vercel.app/api/articulos";
+      fetch(BASE_URL, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Error en la respuesta de la API");
+          }
+          return response.json();
+        })
+        .then((articulos) => {
+          let html = "";
+          Object.entries(articulos.datos).forEach(([categoria, items]) => {
+            html += `<section class="categoria">
+                <h2>${
+                  categoria.charAt(0).toUpperCase() + categoria.slice(1)
+                }</h2>
+                <button class="btn btn-left" id="btn-left-${categoria}" onclick="scrollToLeft('${categoria}')">&#9664;</button>
+                <div class="articulos" id="${categoria}">
+                  ${items
+                    .map(
+                      (articulo) => `
+                  <div class="articulo" data-id="${articulo.id}">
+                    <h3>${articulo.nombre}</h3>
+                    <img src="${articulo.url}" alt="${articulo.nombre}">
+                    <p>Precio: $${articulo.precio}</p>
+                    <button class="delete-btn" onclick="deleteArticle('${categoria}', ${articulo.id})">Eliminar</button>
+                  </div>`
+                    )
+                    .join("")}
+                </div>
+                <button class="btn btn-right" id="btn-right-${categoria}" onclick="scrollToRight('${categoria}')">&#9654;</button>
+              </section>`;
+          });
+          document.querySelector("#categories").innerHTML = html;
+
+          // Verificar visibilidad de botones tras renderizar el contenido
+          Object.keys(articulos.datos).forEach((categoria) => {
+            checkScrollVisibility(categoria);
+          });
+        });
+
+      // Función para desplazar a la izquierda
+      window.scrollToLeft = (id) => {
+        const container = document.getElementById(id);
+        container.scrollBy({
+          left: -500,
+          behavior: "smooth",
+        });
+      };
+
+      // Función para desplazar a la derecha
+      window.scrollToRight = (id) => {
+        const container = document.getElementById(id);
+        container.scrollBy({
+          left: 500,
+          behavior: "smooth",
+        });
+      };
+
+      // Función para verificar si los botones deben mostrarse
+      function checkScrollVisibility(id) {
+        const container = document.getElementById(id);
+        const btnLeft = document.getElementById(`btn-left-${id}`);
+        const btnRight = document.getElementById(`btn-right-${id}`);
+
+        if (container.scrollWidth > container.clientWidth) {
+          btnLeft.style.display = "block";
+          btnRight.style.display = "block";
+        } else {
+          btnLeft.style.display = "none";
+          btnRight.style.display = "none";
+        }
+      }
+    </script>
+  </body>
+</html>

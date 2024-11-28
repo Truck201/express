@@ -13,16 +13,17 @@ const plantillaObjetoValido = z.object({
       invalid_type_error: "El numero tiene que ser entero",
     })
     .positive(),
-  url: z.string().url({
-    message: "Imagen solo URL",
+  url: z.string({
+    message: "Imagen solo string local",
     required_error: "La URL es requerida",
   }),
 });
-
+// input todos los elementos
 export function isCorrect(input) {
   return plantillaObjetoValido.safeParse(input);
 }
 
+// input no todos los elementos (partial)
 export function isPartialCorrect(input) {
   return plantillaObjetoValido.partial().safeParse(input);
 }
