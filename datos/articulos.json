@@ -1,0 +1,64 @@
+{
+  "datos": {
+    "pan": [
+      {
+        "id": 1,
+        "nombre": "Bizcochos",
+        "precio": 1800,
+        "url": ""
+      },
+      {
+        "id": 2,
+        "nombre": "Pan tostado",
+        "precio": 1800,
+        "url": ""
+      },
+      {
+        "id": 3,
+        "nombre": "Facturas",
+        "precio": 1800,
+        "url": ""
+      }
+    ],
+    "emb": [
+      {
+        "id": 1,
+        "nombre": "Salamin",
+        "precio": 1800,
+        "url": ""
+      },
+      {
+        "id": 2,
+        "nombre": "Queso barra",
+        "precio": 1800,
+        "url": ""
+      },
+      {
+        "id": 3,
+        "nombre": "Mortadela",
+        "precio": 1800,
+        "url": ""
+      }
+    ],
+    "lac": [
+      {
+        "id": 1,
+        "nombre": "Leche 1L",
+        "precio": 1800,
+        "url": ""
+      },
+      {
+        "id": 2,
+        "nombre": "Crema 300g",
+        "precio": 1800,
+        "url": ""
+      },
+      {
+        "id": 3,
+        "nombre": "Queso rallado",
+        "precio": 1800,
+        "url": ""
+      }
+    ]
+  }
+}

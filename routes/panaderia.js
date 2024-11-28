@@ -1,19 +1,21 @@
-const express = require("express");
+import express, { json } from "express";
+import fs from "node:fs";
 
-const { panaderia } = require("../datos/articulos");
-
+const articulos = JSON.parse(
+  fs.readFileSync("./datos/articulos.json", "utf-8")
+);
 // api/articulos/panaderia
-const routerPanaderia = express.Router();
+export const routerPanaderia = express.Router();
 
 routerPanaderia.get("/", (req, res) => {
-  res.json(panaderia);
+  res.json(articulos.datos.pan);
 });
 
 // api/articulos/panaderia/:nombre
 routerPanaderia.get("/:nombre", (req, res) => {
   // Añadir verificación de parámetro id
   const nombre = req.params.nombre;
-  const articulos = panaderia.filter((art) => art.nombre === nombre);
+  const articulos = articulos.pan.filter((art) => art.nombre === nombre);
 
   if (articulos.length === 0) {
     res.status(400).send(`No se encuentra articulos llamados ${articulos}`);
@@ -26,5 +28,3 @@ routerPanaderia.get("/:nombre", (req, res) => {
 routerPanaderia.post("/:nombre", (req, res) => {});
 
 routerPanaderia.delete("/:id", (req, res) => {});
-
-module.exports = routerPanaderia;

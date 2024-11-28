@@ -1,4 +1,4 @@
-const z = require("zod");
+import z from "zod";
 
 const plantillaObjetoValido = z.object({
   nombre: z.string({
@@ -19,15 +19,10 @@ const plantillaObjetoValido = z.object({
   }),
 });
 
-function isCorrect(input) {
+export function isCorrect(input) {
   return plantillaObjetoValido.safeParse(input);
 }
 
-function isPartialCorrect(input) {
+export function isPartialCorrect(input) {
   return plantillaObjetoValido.partial().safeParse(input);
 }
-
-module.exports = {
-  isCorrect,
-  isPartialCorrect,
-};

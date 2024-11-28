@@ -1,22 +1,26 @@
-const express = require("express");
-const app = express();
+import express, { json, query } from "express";
+export const app = express();
 
-const cors = require("cors");
+import fs from "node:fs";
+import cors from "cors";
 
-const { datos } = require("./datos/articulos");
-const { isCorrect, isPartialCorrect } = require("./validacion.js");
+const articulos = JSON.parse(
+  fs.readFileSync("./datos/articulos.json", "utf-8")
+);
+import { isCorrect, isPartialCorrect } from "./validacion.js";
 
 app.disable("x-powered-by");
 app.use(express.json());
 
 // Routers
-const routerPanaderia = require("./router/panaderia");
+import { routerPanaderia } from "./routes/panaderia.js";
 app.use("/api/articulos/panaderia", routerPanaderia);
 
-const routerLacteos = require("./router/lacteos");
+import { routerLacteos } from "./routes/lacteos.js";
 app.use("/api/articulos/lacteos", routerLacteos);
 
-const routerEmbutidos = require("./router/embutidos");
+import { routerEmbutidos } from "./routes/embutidos.js";
+import { constants } from "node:buffer";
 app.use("/api/articulos/embutidos", routerEmbutidos);
 
 // GET
@@ -24,19 +28,17 @@ app.get("/api/articulos", (req, res) => {
   // /api/articulos?id:int&nombre:articulo
   // const { query } = req.query;
   try {
-    console.log(`Articulos: /n${datos}`);
-    res.json(data);
+    return res.json(articulos);
   } catch (err) {
-    console.log(`Error al obtener los articulos: ${err}`);
-    res
+    return res
       .status(500)
-      .json({ error: "Hubo un problema al obtener los articulos." });
+      .json({ error: "❌ Hubo un problema al obtener los articulos." });
   }
 });
 
 // POST
 const tomarSiguienteID = (array) => {
-  return array.length ? array[array.length - 1] : 1;
+  return array.length ? array[array.length - 1].id + 1 : 1;
 };
 
 app.post("/api/articulos/:categoria", (req, res) => {
@@ -44,41 +46,96 @@ app.post("/api/articulos/:categoria", (req, res) => {
   const validacion = isCorrect(req.body);
 
   if (!validacion.success) {
-    res.status(400).json({ error: validacion.error.message });
+    return res.status(400).json({ error: `❌ ${validacion.error.message}` });
   }
 
-  if (!data[categoria]) {
-    res.send(404).send(`<h1>404 Not Found ${categoria}</h1>`);
+  if (!articulos.datos[categoria]) {
+    return res.send(404).json({ error: `❌ 404 Not Found ${categoria}` });
   }
 
-  const existe = data[categoria].some(
-    (art) => art.toLowerCase() === validacion.data.nombre.toLowerCase()
+  const existe = articulos.datos[categoria].some(
+    (art) => art.nombre === validacion.data.nombre
   );
 
   if (existe) {
-    return res
-      .status(400)
-      .send(
-        `<h1>Ya existe ${validacion.data.nombre} en la categoria ${categoria}`
-      );
+    return res.status(400).json({
+      message: `Ya existe ${validacion.data.nombre} en la categoria ${categoria} 🤫`,
+    });
   }
 
-  const siguienteID = tomarSiguienteID(data[categoria]);
+  const siguienteID = tomarSiguienteID(articulos.datos[categoria]);
 
   const nuevoArticulo = {
     id: siguienteID,
     ...validacion.data,
   };
 
-  data[categoria].push(nuevoArticulo);
+  articulos.datos[categoria].push(nuevoArticulo);
 
   res.status(201).json(nuevoArticulo);
+});
+
+// PATCH
+app.patch("/api/articulos", (req, res) => {
+  const { categoria, id } = req.query;
+  const validacion = isPartialCorrect(req.body);
+
+  if (!validacion.success) {
+    return res.status(400).json({ error: validacion.error.message });
+  }
+
+  if (!articulos.datos[categoria]) {
+    return res.status(404).json({
+      error: `❌ No existe categoria ${categoria} en la base de datos`,
+    });
+  }
+  // some = boolean // find = object
+  const articulo = articulos.datos[categoria].find(
+    (art) => art.id === parseInt(id)
+  );
+
+  if (!articulo) {
+    return res
+      .status(404)
+      .json({ error: `❌ No existe un articulo con ID ${id}` });
+  }
+
+  Object.assign(articulo, validacion.data);
+  res.json(articulo);
+});
+
+// DELETE
+app.delete("/api/articulos/:categoria/:id", (req, res) => {
+  console.log("DELETE request:", req.params);
+  const categoria = req.params.categoria;
+  const id = req.params.id;
+  const parsedID = parseInt(id, 10);
+
+  if (!articulos.datos[categoria]) {
+    return res
+      .status(404)
+      .json({ error: `❌ La categoria ${categoria} no existe en articulos` });
+  }
+
+  const categoriaArticulo = articulos.datos[categoria];
+  const indice = categoriaArticulo.findIndex(
+    (articulo) => articulo.id === parsedID
+  );
+
+  if (indice === -1) {
+    return res.status(404).json({
+      error: `❌ El articulo con ID ${id} no se encuentra en la categoria ${categoria}`,
+    });
+  }
+
+  categoriaArticulo.splice(indice, 1);
+  return res
+    .status(200)
+    .json({ message: `El articulo con id ${id} ha sido eliminado 👌` });
 });
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`Servidor escucha en http//localhost:${PORT}`);
+  console.log(`-> Servidor escucha en http://localhost:${PORT} 🦻🦻`);
 });
-
-module.exports = app;

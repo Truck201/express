@@ -1,17 +1,20 @@
-const express = require("express");
+import express from "express";
+import fs from "node:fs";
 
-const { embutidos } = require("../datos/articulos");
+const articulos = JSON.parse(
+  fs.readFileSync("./datos/articulos.json", "utf-8")
+);
 
-const routerEmbutidos = express.Router();
+export const routerEmbutidos = express.Router();
 
 routerEmbutidos.get("/", (req, res) => {
-  res.json(embutidos);
+  res.json(articulos.datos.emb);
 });
 
 routerEmbutidos.get("/:nombre", (req, res) => {
   // Añadir verificación de parámetro id
   const { nombre } = req.params.id;
-  const articulos = embutidos.filter((art) => art.nombre === nombre);
+  const articulos = articulos.emb.filter((art) => art.nombre === nombre);
 
   if (articulos.length === 0) {
     res.status(400).send(`No se encuentra articulos llamados ${articulos}`);
@@ -19,5 +22,3 @@ routerEmbutidos.get("/:nombre", (req, res) => {
 
   res.send(articulos);
 });
-
-module.exports = routerEmbutidos;
