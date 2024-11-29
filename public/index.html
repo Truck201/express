@@ -134,6 +134,26 @@
           btnRight.style.display = "none";
         }
       }
+
+      window.deleteArticle = (category, id) => {
+        console.log("Attempting to delete:", category, id, BASE_URL);
+        fetch(`${BASE_URL}/${category}/${id}`, { method: "DELETE" })
+          .then((res) => {
+            if (!res.ok) {
+              throw new Error(`Error ${res.status}: ${res.statusText}`);
+            }
+            if (!res.headers.get("content-type").includes("application/json")) {
+              throw new Error("Respuesta no es JSON");
+            }
+            return res.json();
+          })
+          .then((data) => {
+            console.log(data.message);
+          })
+          .catch((error) => {
+            console.error("Error eliminando el artículo:", error);
+          });
+      };
     </script>
   </body>
 </html>
